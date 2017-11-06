@@ -111,10 +111,12 @@ int main(int argc, char *argv[])
 
 		if (!fork()) { // this is the child process
 			close(sockfd); // child doesn't need the listener
-			seconds = time(NULL) + 2208988800;
-			seconds = htonl(seconds);
-			int bytes_sent = send(new_fd,&seconds,sizeof(int),0);
-			sleep(1);
+			while(1){
+				seconds = time(NULL) + 2208988800;
+				seconds = htonl(seconds);
+				int bytes_sent = send(new_fd,&seconds,sizeof(int),0);
+				sleep(1);
+			}
 			close(new_fd);
 			exit(0);
 		}
