@@ -13,7 +13,7 @@
 
 #define DEFAULT_PORT 37
 #define BACKLOG 10	 // how many pending connections queue will hold
-#define MYPORT 6898
+#define SERVER_PORT 6898
 
 int sockfd;
 
@@ -37,13 +37,25 @@ int main(int argc, char *argv[])
   char *m;
   char *mode;
   char *hostaddrp; // dotted decimal host addr string
-	int port, seconds, n, sockfd, new_fd, optval;
+	int i, debug, port, seconds, n, sockfd, new_fd, optval;
   uint clientlen; // byte size of client's address
 
-        /* handler SIGINT signal*/
+  /* handler SIGINT signal*/
 	signal(SIGINT, sigint_handler);
 
-        /* check command line arguments */
+	for(i=0; i<argc; i++){
+		if(strcmp(argv[i],"-h")){
+			host = argv[i+1];
+		}else if(strcmp(argv[i],"-m")){
+			mode = argv[i+1];
+		}else if(strcmp(argv[i],"-p")){
+			port = atoi(argv[i+1]);
+		}else if(strcmp(argv[i],"-d")){
+			debug = 1;
+		}
+	}
+
+  /* check command line arguments */
 	switch (argc) {
 	case 7://Consulta TCP
     h = argv[1];
@@ -53,7 +65,7 @@ int main(int argc, char *argv[])
     m = argv[5];
     mode = argv[6];
 
-    if(strcmp (h,"-h") == 0 && strcmp (p,"-p") == 0 && strcmp (m,"-m") == 0 && strcmp (mode,"ct") == 0){
+    if(strcmp (mode,"ct") == 0){
       printf("TCP_Client\n");
       /* socket: create the socket */
       sockfd = socket(AF_INET, SOCK_STREAM, 0);
@@ -114,7 +126,7 @@ int main(int argc, char *argv[])
     m = argv[1];
     mode = argv[2];
 
-    if(strcmp (m,"-m") == 0 && strcmp (mode,"s") == 0){
+    if(strcmp (mode,"s") == 0){
       //Server();
 			printf("TIME server running in port 6898\n");
 			/* socket: create the parent socket */
@@ -134,7 +146,7 @@ int main(int argc, char *argv[])
 			bzero((char *) &serveraddr, sizeof(serveraddr));
 			serveraddr.sin_family = AF_INET;
 			serveraddr.sin_addr.s_addr = htonl(INADDR_ANY);
-			serveraddr.sin_port = htons(MYPORT);
+			serveraddr.sin_port = htons(SERVER_PORT);
 
 			/* bind: associate the parent socket with a port */
 			if (bind(sockfd, (struct sockaddr *) &serveraddr,
@@ -172,7 +184,7 @@ int main(int argc, char *argv[])
 								exit(0);
 				}
 
-				printf("Received request from Client: %s : %d\n", hostaddrp, MYPORT);
+				printf("Received request from Client: %s : %d\n", hostaddrp, SERVER_PORT);
 
 				int seconds, bytes_sent;
 
@@ -205,7 +217,7 @@ int main(int argc, char *argv[])
     m = argv[3];
     mode = argv[4];
 
-    if(strcmp (h,"-h") == 0 && strcmp (m,"-m") == 0 && strcmp (mode,"cu") == 0){
+    if(strcmp (mode,"cu") == 0){
       //UDP_Client();
       printf("UDP_Client\n");
 			/* socket: create the socket */
