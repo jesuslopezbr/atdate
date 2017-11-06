@@ -55,6 +55,8 @@ int main(int argc, char *argv[])
 		}
 	}
 
+	printf("HOLA");
+
   if(strcmp (mode,"ct") == 0){
       printf("TCP_Client\n");
       /* socket: create the socket */
