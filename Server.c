@@ -57,7 +57,7 @@ int main(int argc, char *argv[])
 	 * Eliminates "ERROR on binding: Address already in * use"
 	 * error. */
         optval = 1;
-        setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &optval , sizeof(int));
+        setsockopt(new_fd, SOL_SOCKET, SO_REUSEADDR, (const void *)&optval , sizeof(int));
 
         /* build the server's Internet address */
         bzero((char *) &serveraddr, sizeof(serveraddr));
@@ -67,7 +67,7 @@ int main(int argc, char *argv[])
 
         /* bind: associate the parent socket with a port */
         if (bind(sockfd, (struct sockaddr *) &serveraddr,
-	         sizeof(struct sockaddr)) < 0) {
+	         sizeof(serveraddr)) < 0) {
                 perror("ERROR on binding");
 								exit(0);
 				}
@@ -83,7 +83,7 @@ int main(int argc, char *argv[])
 
         /* wait for a connection request */
 	while(1) {  // main accept() loop
-    clientlen = sizeof(struct sockaddr_in);
+    clientlen = sizeof(clientaddr);
 		new_fd = accept(sockfd, (struct sockaddr *)&clientaddr,&clientlen);
 
 		if (new_fd == -1) {
@@ -107,7 +107,7 @@ int main(int argc, char *argv[])
 		//       hostp->h_name, hostaddrp);
 		printf("Received request from Client: %s:%d\n", hostaddrp, PORT);
 
-		/*if (!fork()) { // this is the child process
+		if (!fork()) { // this is the child process
 			close(sockfd); // child doesn't need the listener
 			timer = time(NULL);
 			if (send(new_fd, ctime(&timer), 30, 0) == -1){
@@ -115,9 +115,9 @@ int main(int argc, char *argv[])
 			}
 			close(new_fd);
 			exit(0);
-		}*/
+		}
 
-		if(fork() == 0){	// This is a child Process
+		/*if(fork() == 0){	// This is a child Process
 			uint32_t buffer;
 			time_t nowtime;
 			int bytes_sent;
@@ -138,7 +138,7 @@ int main(int argc, char *argv[])
 				usé valgrind y descubrí que cerraba el hijo con un SIGPIPE (13),
 				así que añadí un handler para esa señal.
 				*/
-			}
+			//}
 		close(new_fd);  // parent doesn't need this
 	}
 	return 0;
