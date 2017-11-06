@@ -44,21 +44,19 @@ int main(int argc, char *argv[])
 	signal(SIGINT, sigint_handler);
 
 	for(i=0; i<argc; i++){
-		if(strcmp(argv[i],"-h")){
+		if(strcmp(argv[i],"-h") == 0){
 			host = argv[i+1];
 		}
-		if(strcmp(argv[i],"-m")){
+		if(strcmp(argv[i],"-m") == 0){
 			mode = argv[i+1];
 		}
-		if(strcmp(argv[i],"-p")){
+		if(strcmp(argv[i],"-p") == 0){
 			port = atoi(argv[i+1]);
 		}
-		if(strcmp(argv[i],"-d")){
+		if(strcmp(argv[i],"-d") == 0){
 			debug = 1;
 		}
 	}
-
-	printf("%s\n", mode);
 
   if(strcmp (mode,"ct") == 0){
       printf("TCP_Client\n");
