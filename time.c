@@ -29,10 +29,7 @@ int main(int argc, char *argv[])
   struct sockaddr_in clientaddr;
   struct hostent *server;
   struct hostent *hostp; // info cliente host
-	char *h;
   char *host;
-  char *p;
-  char *m;
   char *mode;
   char *hostaddrp; // addr string decimal host
 	int i, debug, port, seconds, n, sockfd, new_fd, optval;
@@ -160,7 +157,7 @@ int main(int argc, char *argv[])
 
     }
 
-		
+
 
 		/**/if(strcmp (mode,"s") == 0){ // Servidor
 
