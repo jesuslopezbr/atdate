@@ -46,11 +46,14 @@ int main(int argc, char *argv[])
 	for(i=0; i<argc; i++){
 		if(strcmp(argv[i],"-h")){
 			host = argv[i+1];
-		}else if(strcmp(argv[i],"-m")){
+		}
+		if(strcmp(argv[i],"-m")){
 			mode = argv[i+1];
-		}else if(strcmp(argv[i],"-p")){
+		}
+		if(strcmp(argv[i],"-p")){
 			port = atoi(argv[i+1]);
-		}else if(strcmp(argv[i],"-d")){
+		}
+		if(strcmp(argv[i],"-d")){
 			debug = 1;
 		}
 	}
@@ -89,20 +92,20 @@ int main(int argc, char *argv[])
 
 			while(1){
 
-      n = recv(sockfd, &seconds, sizeof(int), 0);
-      if (n < 0) {
+      	n = recv(sockfd, &seconds, sizeof(int), 0);
+      	if (n < 0) {
               perror("ERROR reading from socket");
               exit(0);
-      }
-			if(n==0){
-				exit(0);
-			}
+      	}
+				if(n==0){
+					exit(0);
+				}
 
-      time_t sec_today = ntohl(seconds) - 2208988800;
+      	time_t sec_today = ntohl(seconds) - 2208988800;
 
-      strftime(output, 4096, "%c", localtime(&sec_today));
+      	strftime(output, 4096, "%c", localtime(&sec_today));
 
-      printf("%s\n", output);
+      	printf("%s\n", output);
 			}
 
       close(sockfd);
