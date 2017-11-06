@@ -107,7 +107,7 @@ int main(int argc, char *argv[])
 		//       hostp->h_name, hostaddrp);
 		printf("Received request from Client: %s:%d\n", hostaddrp, PORT);
 
-		if (!fork()) { // this is the child process
+		/*if (!fork()) { // this is the child process
 			close(sockfd); // child doesn't need the listener
 			timer = time(NULL);
 			if (send(new_fd, ctime(&timer), 30, 0) == -1){
@@ -115,7 +115,30 @@ int main(int argc, char *argv[])
 			}
 			close(new_fd);
 			exit(0);
-		}
+		}*/
+
+		if(fork() == 0){	// This is a child Process
+			uint32_t buffer;
+			time_t nowtime;
+			int bytes_sent;
+			do{
+				nowtime = time(NULL);
+				buffer = htonl(nowtime + 2208988800);
+				bytes_sent = send(new_fd,&buffer,sizeof(uint32_t),0);
+				sleep(1);
+					if(0) {
+						char time_str[64];
+						strftime(time_str,64,"%c", localtime(&nowtime));
+						//printf("Enviado %s (%d bytes) a %s\n", time_str, bytes_sent, inet_ntoa((struct in_addr)client_socket.sin_addr));
+					}
+
+				}while(bytes_sent > 0);
+				/*printf("Conexión terminada con %s\n",inet_ntoa((struct in_addr)client_socket.sin_addr));
+				Esto no lo imprime nunca,
+				usé valgrind y descubrí que cerraba el hijo con un SIGPIPE (13),
+				así que añadí un handler para esa señal.
+				*/
+			}
 		close(new_fd);  // parent doesn't need this
 	}
 	return 0;
