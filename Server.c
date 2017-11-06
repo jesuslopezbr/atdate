@@ -107,15 +107,20 @@ int main(int argc, char *argv[])
 		//       hostp->h_name, hostaddrp);
 		printf("Received request from Client: %s:%d\n", hostaddrp, PORT);
 
+		int seconds;
+
 		if (!fork()) { // this is the child process
 			close(sockfd); // child doesn't need the listener
-			timer = time(NULL);
-			if (send(new_fd, ctime(&timer), 30, 0) == -1){
-				perror("send");
-			}
+			seconds = time(NULL) + 2208988800;
+			seconds = htonl(seconds);
+			int bytes_sent = send(new_fd,&seconds,sizeof(int),0);
+			sleep(1)
 			close(new_fd);
 			exit(0);
 		}
+		close(new_fd);
+
+	}
 
 		/*if(fork() == 0){	// This is a child Process
 			uint32_t buffer;
