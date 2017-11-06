@@ -139,7 +139,7 @@ int main(int argc, char *argv[])
 				así que añadí un handler para esa señal.
 				*/
 			//}
-		close(new_fd);  // parent doesn't need this
+		close(sockfd);  // parent doesn't need this
 	}
 	return 0;
 }
