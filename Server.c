@@ -145,7 +145,6 @@ int main(int argc, char *argv[])
 				*/
 			//}
 		close(sockfd);  // parent doesn't need this
-	}
 	return 0;
 }
 
