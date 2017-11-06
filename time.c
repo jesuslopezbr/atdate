@@ -55,17 +55,7 @@ int main(int argc, char *argv[])
 		}
 	}
 
-  /* check command line arguments */
-	switch (argc) {
-	case 7://Consulta TCP
-    h = argv[1];
-		host = argv[2];
-		p = argv[3];
-    port = atoi(argv[4]);
-    m = argv[5];
-    mode = argv[6];
-
-    if(strcmp (mode,"ct") == 0){
+  if(strcmp (mode,"ct") == 0){
       printf("TCP_Client\n");
       /* socket: create the socket */
       sockfd = socket(AF_INET, SOCK_STREAM, 0);
@@ -121,12 +111,8 @@ int main(int argc, char *argv[])
   		exit(1);
 
     }
-		break;
-  case 3://Servidor
-    m = argv[1];
-    mode = argv[2];
 
-    if(strcmp (mode,"s") == 0){
+		if(strcmp (mode,"s") == 0){
       //Server();
 			printf("TIME server running in port 6898\n");
 			/* socket: create the parent socket */
@@ -210,14 +196,8 @@ int main(int argc, char *argv[])
       fprintf(stderr, "usage: %s <-m> <s>\n", argv[0]);
   		exit(1);
     }
-    break;
-  case 5://Consulta UDP
-    h = argv[1];
-    host = argv[2];
-    m = argv[3];
-    mode = argv[4];
 
-    if(strcmp (mode,"cu") == 0){
+		if(strcmp (mode,"cu") == 0){
       //UDP_Client();
       printf("UDP_Client\n");
 			/* socket: create the socket */
@@ -270,10 +250,6 @@ int main(int argc, char *argv[])
       fprintf(stderr, "usage: %s <-h> <host> <-m> <cu>\n", argv[0]);
   		exit(1);
     }
-    break;
-	default:
-		fprintf(stderr, "usage: %s <-h> <host> <-p> <port> <-m> <mode> <-d>\n", argv[0]);
-		exit(1);
-  }
+
 	return(0);
 }
