@@ -76,6 +76,8 @@ int main(int argc, char *argv[])
 
       char output[4096];
 
+			while(1){
+
       n = recv(sockfd, &seconds, sizeof(int), 0);
       if (n < 0) {
               perror("ERROR reading from socket");
@@ -87,6 +89,7 @@ int main(int argc, char *argv[])
       strftime(output, 4096, "%c", localtime(&sec_today));
 
       printf("%s\n", output);
+			}
 
       close(sockfd);
 
