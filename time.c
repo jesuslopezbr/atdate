@@ -48,7 +48,6 @@ int main(int argc, char *argv[])
 
     if(strcmp (h,"-h") == 0 && strcmp (p,"-p") == 0 && strcmp (m,"-m") == 0 && strcmp (mode,"ct") == 0){
       printf("TCP_Client\n");
-			while(1){
       /* socket: create the socket */
       sockfd = socket(AF_INET, SOCK_STREAM, 0);
       if (sockfd < 0) {
@@ -88,7 +87,6 @@ int main(int argc, char *argv[])
       strftime(output, 4096, "%+", localtime(&sec_today));
 
       printf("%s\n", output);
-		}
 
       close(sockfd);
 
