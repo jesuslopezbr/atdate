@@ -114,7 +114,7 @@ int main(int argc, char *argv[])
 			seconds = time(NULL) + 2208988800;
 			seconds = htonl(seconds);
 			int bytes_sent = send(new_fd,&seconds,sizeof(int),0);
-			sleep(1)
+			sleep(1);
 			close(new_fd);
 			exit(0);
 		}
