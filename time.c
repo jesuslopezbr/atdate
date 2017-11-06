@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	printf("HOLA");
+	printf("%s\n"mode);
 
   if(strcmp (mode,"ct") == 0){
       printf("TCP_Client\n");
