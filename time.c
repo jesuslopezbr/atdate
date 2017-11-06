@@ -105,11 +105,6 @@ int main(int argc, char *argv[])
 
       close(sockfd);
 
-    }else{
-
-      fprintf(stderr, "usage: %s <-h> <host> <-p> <port> <-m> <ct>\n", argv[0]);
-  		exit(1);
-
     }
 
 		if(strcmp (mode,"s") == 0){
@@ -192,9 +187,6 @@ int main(int argc, char *argv[])
 				close(new_fd);
 			}
 			close(sockfd);  // parent doesn't need this
-    }else{
-      fprintf(stderr, "usage: %s <-m> <s>\n", argv[0]);
-  		exit(1);
     }
 
 		if(strcmp (mode,"cu") == 0){
@@ -246,9 +238,6 @@ int main(int argc, char *argv[])
 
 			printf("%s\n", output);
 
-    }else{
-      fprintf(stderr, "usage: %s <-h> <host> <-m> <cu>\n", argv[0]);
-  		exit(1);
     }
 
 	return(0);
