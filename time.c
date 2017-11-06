@@ -61,6 +61,9 @@ int main(int argc, char *argv[])
               perror("ERROR opening socket");
               exit(0);
       }
+			if(debug==1){
+				printf("Socket creado\n");
+			}
 
       /* gethostbyname: DNS del servidor */
       server = gethostbyname(host);
@@ -68,6 +71,9 @@ int main(int argc, char *argv[])
               fprintf(stderr,"ERROR, no such host: %s\n", host);
               exit(0);
       }
+			if(debug==1){
+				printf("Server Host: %s\n", host);
+			}
 
       /* Construir direcciones del servidor internet */
       bzero((char *) &serveraddr, sizeof(serveraddr));
@@ -80,6 +86,9 @@ int main(int argc, char *argv[])
               perror("ERROR connecting");
               exit(0);
       }
+			if(debug==1){
+				printf("Conexion creada\n");
+			}
 
       char output[4096];
 
@@ -94,12 +103,19 @@ int main(int argc, char *argv[])
 				if(n==0){
 					exit(0);
 				}
+				if(debug==1){
+					printf("Segundos: %d\n", seconds);
+					printf("Bytes recibidos: %d\n", n);
+				}
 				// Conversion de fecha y hora
       	time_t sec_today = ntohl(seconds) - 2208988800;
 
       	strftime(output, 4096, "%c", localtime(&sec_today));
 				// Sacar fecha y hora por pantalla
       	printf("%s\n", output);
+			}
+			if(debug==1){
+				printf("Cerrando socket...\n");
 			}
 			// Cierre del socket (cierre de conexion)
       close(sockfd);
@@ -115,12 +131,18 @@ int main(int argc, char *argv[])
 							perror("ERROR opening socket");
 							exit(0);
 			}
+			if(debug==1){
+				printf("Socket creado\n");
+			}
 
 			/* gethostbyname: DNS del servidor */
 			server = gethostbyname(host);
 			if (server == NULL) {
 							fprintf(stderr,"ERROR, no such host: %s\n", host);
 							exit(0);
+			}
+			if(debug==1){
+				printf("Server Host: %s\n", host);
 			}
 
 			/* Construir direcciones del servidor internet */
@@ -134,6 +156,9 @@ int main(int argc, char *argv[])
               perror("ERROR connecting");
               exit(0);
       }
+			if(debug==1){
+				printf("Conexion creada\n");
+			}
 
 			// Cliente UDP manda datagrama vacio
 			n = send(sockfd, NULL, 0, 0);
@@ -141,6 +166,10 @@ int main(int argc, char *argv[])
 							perror("ERROR writing to socket");
 							exit(0);
 			}
+			if(debug==1){
+				printf("Datagrama vacío enviado\n");
+			}
+
 			char output[4096];
 			// Recibir bytes del servidor
 			n = recv(sockfd, &seconds, sizeof(int), 0);
@@ -148,6 +177,11 @@ int main(int argc, char *argv[])
 							perror("ERROR reading from socket");
 							exit(0);
 			}
+			if(debug==1){
+				printf("Segundos: %d\n", seconds);
+				printf("Bytes recibidos: %d\n", n);
+			}
+
 			// Conversion fecha y hora
 			time_t sec_today = ntohl(seconds) - 2208988800;
 
@@ -168,6 +202,9 @@ int main(int argc, char *argv[])
 									perror("ERROR opening socket");
 									exit(0);
 					}
+					if(debug==1){
+						printf("Socket creado\n");
+					}
 
 					/* setsockopt: Reactivar el servidor cuando se cierra. */
 					optval = 1;
@@ -185,17 +222,26 @@ int main(int argc, char *argv[])
 									perror("ERROR on binding");
 									exit(0);
 					}
+					if(debug==1){
+						printf("Puerto asociado a servidor: 6898\n");
+					}
 
 					/* listen: Hacer que el socket escuche peticiones */
 					if (listen(sockfd, BACKLOG) < 0) {
 									perror("ERROR on listen");
 									exit(0);
 					}
+					if(debug==1){
+						printf("Escuchando peticiones...\n");
+					}
 
 					/* Esperar a la conexion */
 					while(1) {  // accept() loop principal
 						clientlen = sizeof(clientaddr);
 						new_fd = accept(sockfd, (struct sockaddr *)&clientaddr,&clientlen);
+						if(debug==1){
+							printf("Esperando conexion...\n");
+						}
 
 						if (new_fd == -1) {
 							perror("ERROR on accept");
@@ -214,8 +260,13 @@ int main(int argc, char *argv[])
 										perror("ERROR on inet_ntoa\n");
 										exit(0);
 						}
+						if(debug==1){
+							printf("Conexion establecida...\n");
+						}
 						// Dirección IP del cliente y puerto asignado
-						printf("Received request from Client: %s : %d\n", hostaddrp, SERVER_PORT);
+						if(debug==1){
+							printf("Received request from Client -> IP: %s PORT: %d\n", hostaddrp, SERVER_PORT);
+						}
 
 						if (!fork()) { // Proceso hijo
 							close(sockfd); // El hijo no necesita escuchar
@@ -227,13 +278,22 @@ int main(int argc, char *argv[])
 									perror("ERROR on send");
 									exit(0);
 								}
+								if(debug==1){
+									printf("Datagrama relleno enviado\n");
+								}
 								// Dormir un segundo
 								sleep(1);
 							}
 							close(new_fd);
 							exit(0);
 						}
+						if(debug==1){
+							printf("Cerrando socket hijo...\n");
+						}
 						close(new_fd);
+					}
+					if(debug==1){
+						printf("Cerrando socket padre...\n");
 					}
 					close(sockfd);  // El padre no necesita esto
 		    }
