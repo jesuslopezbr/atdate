@@ -90,6 +90,9 @@ int main(int argc, char *argv[])
               perror("ERROR reading from socket");
               exit(0);
       }
+			if(n==0){
+				exit(0);
+			}
 
       time_t sec_today = ntohl(seconds) - 2208988800;
 
