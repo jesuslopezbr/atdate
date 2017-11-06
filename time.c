@@ -86,7 +86,7 @@ int main(int argc, char *argv[])
 
       time_t sec_today = ntohl(seconds) - 2208988800;
 
-      strftime(output, 4096, "%+", localtime(&sec_today));
+      strftime(output, 4096, "%c", localtime(&sec_today));
 
       printf("%s\n", output);
 			}
