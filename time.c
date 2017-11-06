@@ -9,6 +9,7 @@
 #include <errno.h>
 #include <signal.h>
 #include <time.h>
+#include <arpa/inet.h>
 
 #define DEFAULT_PORT 37
 #define BACKLOG 10	 // how many pending connections queue will hold
