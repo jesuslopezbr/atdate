@@ -35,6 +35,8 @@ int main(int argc, char *argv[])
   int optval; // flag value for setsockopt
 	char *mode;
 	char *m;
+	/* handler SIGCHLD signal */
+	signal(SIGCHLD, sigchld_handler);
 
 	switch (argc) {
 	case 3:
@@ -79,9 +81,6 @@ int main(int argc, char *argv[])
 								exit(0);
 				}
 
-	/* handler SIGCHLD signal */
-	signal(SIGCHLD, sigchld_handler);
-
         /* wait for a connection request */
 	while(1) {  // main accept() loop
     clientlen = sizeof(clientaddr);
@@ -106,7 +105,7 @@ int main(int argc, char *argv[])
 								}
                 //printf("server got connection from %s (%s)\n",
 		//       hostp->h_name, hostaddrp);
-		printf("Received request from Client: %s:%d\n", hostaddrp, PORT);
+		printf("Received request from Client: %s : %d\n", hostaddrp, PORT);
 
 		int seconds, bytes_sent;
 
@@ -116,6 +115,10 @@ int main(int argc, char *argv[])
 				seconds = time(NULL) + 2208988800;
 				seconds = htonl(seconds);
 				bytes_sent = send(new_fd, &seconds, sizeof(int), 0);
+				if (bytes_sent == -1) {
+					perror("ERROR on send");
+					exit(0);
+				}
 				sleep(1);
 			}
 			close(new_fd);
