@@ -18,14 +18,12 @@
 #include <time.h>
 
 #define BACKLOG 10	 // how many pending connections queue will hold
-#define BUFSIZE 1024
 #define PORT 6898
 
 void sigchld_handler(int s);
 
 int main(int argc, char *argv[])
 {
-	time_t timer;
 	int sockfd, new_fd;  // listen on sock_fd, new connection on new_fd
   uint clientlen; // byte size of client's address
   struct sockaddr_in serveraddr; // server's addr

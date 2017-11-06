@@ -10,7 +10,9 @@
 #include <signal.h>
 #include <time.h>
 
-#define PORT 37
+#define DEFAULT_PORT 37
+#define BACKLOG 10	 // how many pending connections queue will hold
+#define MYPORT 6898
 
 int sockfd;
 
@@ -25,13 +27,17 @@ void sigint_handler(int signo)
 int main(int argc, char *argv[])
 {
 	struct sockaddr_in serveraddr;
+  struct sockaddr_in clientaddr; // client addr
+  struct hostent *server;
+  struct hostent *hostp; // client host info
 	char *h;
   char *host;
   char *p;
   char *m;
   char *mode;
-	int port,seconds,n;
-  struct hostent *server;
+  char *hostaddrp; // dotted decimal host addr string
+	int port, seconds, n, sockfd, new_fd, optval;
+  uint clientlen; // byte size of client's address
 
         /* handler SIGINT signal*/
 	signal(SIGINT, sigint_handler);
@@ -106,7 +112,84 @@ int main(int argc, char *argv[])
 
     if(strcmp (m,"-m") == 0 && strcmp (mode,"s") == 0){
       //Server();
-      printf("Server\n");
+			printf("TIME server running in port 6898\n");
+			/* socket: create the parent socket */
+			sockfd = socket(AF_INET, SOCK_STREAM, 0);
+			if (sockfd < 0) {
+							perror("ERROR opening socket");
+							exit(0);
+			}
+
+			/* setsockopt: lets s rerun the server immediately after we kill it.
+ 			* Eliminates "ERROR on binding: Address already in * use"
+ 			* error. */
+			optval = 1;
+			setsockopt(new_fd, SOL_SOCKET, SO_REUSEADDR, (const void *)&optval , sizeof(int));
+
+			/* build the server's Internet address */
+			bzero((char *) &serveraddr, sizeof(serveraddr));
+			serveraddr.sin_family = AF_INET;
+			serveraddr.sin_addr.s_addr = htonl(INADDR_ANY);
+			serveraddr.sin_port = htons(MYPORT);
+
+			/* bind: associate the parent socket with a port */
+			if (bind(sockfd, (struct sockaddr *) &serveraddr,
+				 sizeof(serveraddr)) < 0) {
+							perror("ERROR on binding");
+							exit(0);
+			}
+
+			/* listen: make this socket ready to accept connection requests */
+			if (listen(sockfd, BACKLOG) < 0) {
+							perror("ERROR on listen");
+							exit(0);
+			}
+
+			/* wait for a connection request */
+			while(1) {  // main accept() loop
+				clientlen = sizeof(clientaddr);
+				new_fd = accept(sockfd, (struct sockaddr *)&clientaddr,&clientlen);
+
+				if (new_fd == -1) {
+					perror("ERROR on accept");
+					exit(0);
+				}
+
+				/* gethostbyaddr: determine who sent the message */
+				hostp = gethostbyaddr((const char *)&clientaddr.sin_addr.s_addr,
+							  sizeof(clientaddr.sin_addr.s_addr), AF_INET);
+				if (hostp == NULL) {
+								perror("ERROR on gethostbyaddr");
+								exit(0);
+				}
+				hostaddrp = inet_ntoa(clientaddr.sin_addr);
+				if (hostaddrp == NULL) {
+								perror("ERROR on inet_ntoa\n");
+								exit(0);
+				}
+
+				printf("Received request from Client: %s : %d\n", hostaddrp, MYPORT);
+
+				int seconds, bytes_sent;
+
+				if (!fork()) { // this is the child process
+					close(sockfd); // child doesn't need the listener
+					while(1){
+						seconds = time(NULL) + 2208988800;
+						seconds = htonl(seconds);
+						bytes_sent = send(new_fd, &seconds, sizeof(int), 0);
+						if (bytes_sent == -1) {
+							perror("ERROR on send");
+							exit(0);
+						}
+						sleep(1);
+					}
+					close(new_fd);
+					exit(0);
+				}
+				close(new_fd);
+			}
+			close(sockfd);  // parent doesn't need this
     }else{
       fprintf(stderr, "usage: %s <-m> <s>\n", argv[0]);
   		exit(1);
@@ -139,7 +222,7 @@ int main(int argc, char *argv[])
 			bzero((char *) &serveraddr, sizeof(serveraddr));
 			serveraddr.sin_family = AF_INET;
 			bcopy((char *)server->h_addr, (char *)&serveraddr.sin_addr.s_addr, server->h_length);
-			serveraddr.sin_port = htons(PORT);
+			serveraddr.sin_port = htons(DEFAULT_PORT);
 
 			/* connect: create a connection with the server */
       if (connect(sockfd, (struct sockaddr *) &serveraddr, sizeof(serveraddr)) < 0) {
