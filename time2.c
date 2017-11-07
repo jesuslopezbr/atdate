@@ -32,7 +32,8 @@ int main(int argc, char *argv[])
   char *host;
   char *mode;
   char *hostaddrp; // addr string decimal host
-	int i, debug, port, seconds, d_sec, l_seconds, s_seconds, d_seconds, n, sockfd, new_fd, optval;
+	int i, debug, port, seconds, l_seconds, s_seconds, n, sockfd, new_fd, optval;
+	double d_sec, d_seconds;
   uint clientlen; // longitud direccion cliente
 
 	signal(SIGINT, sigint_handler); // Señal de cerrar programa
@@ -106,7 +107,7 @@ int main(int argc, char *argv[])
 			while(1){
 
 				// recibir bytes del servidor
-      	n = recv(sockfd, &d_seconds, sizeof(int), 0);
+      	n = recv(sockfd, &d_seconds, sizeof(double), 0);
       	if (n < 0) {
               perror("ERROR reading from socket");
               exit(0);
@@ -115,7 +116,7 @@ int main(int argc, char *argv[])
 					exit(0);
 				}
 				// Sacar segundos de diferencia por pantalla
-      	printf("%d\n", d_seconds);
+      	printf("%f\n", d_seconds);
 			}
 			if(debug==1){
 				printf("Cerrando socket...\n");
@@ -265,9 +266,6 @@ int main(int argc, char *argv[])
 						}
 						if(debug==1){
 							printf("Conexion establecida...\n");
-						}
-						// Dirección IP del cliente y puerto asignado
-						if(debug==1){
 							printf("Received request from Client -> IP: %s PORT: %d\n", hostaddrp, SERVER_PORT);
 						}
 
@@ -285,9 +283,9 @@ int main(int argc, char *argv[])
 							printf("Segundos del servidor: %d\n", s_seconds);
 						}
 
-						d_sec = s_seconds - seconds;
+						d_sec = difftime(s_seconds,seconds);
 						if(debug==1){
-							printf("Diferencia de segundos: %d\n", d_sec);
+							printf("Diferencia de segundos: %f\n", d_sec);
 						}
 
 						if (!fork()) { // Proceso hijo
@@ -295,14 +293,15 @@ int main(int argc, char *argv[])
 
 								while(1){
 
-								n = send(new_fd, &d_sec, sizeof(int), 0);
+								n = send(new_fd, &d_sec, sizeof(double), 0);
 								if (n == -1) {
 									perror("ERROR on send");
 									exit(0);
 								}
 								if(debug==1){
-									printf("Diferencia de segundos enviada: %d\n", d_sec);
+									printf("Diferencia de segundos enviada: %f\n", d_sec);
 								}
+								sleep(1);
 							}
 							close(new_fd);
 							exit(0);
