@@ -1,2 +1,2 @@
 all:
-			gcc -o atdate time.c
+			gcc -o atdate time2.c
