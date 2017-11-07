@@ -271,27 +271,29 @@ int main(int argc, char *argv[])
 							printf("Received request from Client -> IP: %s PORT: %d\n", hostaddrp, SERVER_PORT);
 						}
 
+						n = recv(sockfd, &seconds, sizeof(int), 0);
+						if (n < 0) {
+									perror("ERROR reading from socket");
+									exit(0);
+						}
+						if(debug==1){
+							printf("Segundos locales recibidos: %d\n", seconds);
+						}
+						s_seconds = time(NULL) + 2208988800;
+						s_seconds = htonl(s_seconds);
+						if(debug==1){
+							printf("Segundos del servidor: %d\n", s_seconds);
+						}
+
+						d_sec = s_seconds - seconds;
+						if(debug==1){
+							printf("Diferencia de segundos: %d\n", d_sec);
+						}
+
 						if (!fork()) { // Proceso hijo
 								close(sockfd); // El hijo no necesita escuchar
-								// recibir bytes del servidor
-				      	n = recv(new_fd, &seconds, sizeof(int), 0);
-				      	if (n < 0) {
-				              perror("ERROR reading from socket");
-				              exit(0);
-				      	}
-								if(debug==1){
-									printf("Segundos locales recibidos: %d\n", seconds);
-								}
-								s_seconds = time(NULL) + 2208988800;
-								s_seconds = htonl(s_seconds);
-								if(debug==1){
-									printf("Segundos del servidor: %d\n", s_seconds);
-								}
 
-								d_sec = s_seconds - seconds;
-								if(debug==1){
-									printf("Diferencia de segundos: %d\n", d_sec);
-								}
+								while(1){
 
 								n = send(new_fd, &d_sec, sizeof(int), 0);
 								if (n == -1) {
@@ -301,6 +303,7 @@ int main(int argc, char *argv[])
 								if(debug==1){
 									printf("Diferencia de segundos enviada: %d\n", d_sec);
 								}
+							}
 							close(new_fd);
 							exit(0);
 						}
